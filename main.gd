@@ -11,6 +11,11 @@ var undo := Undo.new()
 var selected_save_slot := 0
 @export var clear_confirmation_timer: Timer
 
+var key_repeat_held := false
+var key_repeat_action: String
+var key_repeat_count: int
+var key_repeat_due: int
+
 func _on_tile_layer_child_entered_tree(tile: TileActor):
 	if !tile.data:
 		return
@@ -49,22 +54,6 @@ func _process(_dt):
 	handle_mouse_hover()
 	handle_cheat_inputs()
 	
-	if Input.is_action_just_pressed("undo"):
-		var success = undo.undo(game)
-		update_visuals()
-		if sound:
-			if success:
-				sound.play("undo")
-			else:
-				sound.play("nuhuh")
-	if Input.is_action_just_pressed("redo"):
-		var success = undo.redo(game)
-		update_visuals()
-		if sound:
-			if success:
-				sound.play("redo")
-			else:
-				sound.play("nuhuh")
 	if Input.is_action_just_pressed("reset"):
 		var success = undo.reset(game)
 		update_visuals()
@@ -73,6 +62,31 @@ func _process(_dt):
 				sound.play("restart")
 			else:
 				sound.play("nuhuh")
+	
+	if Input.is_action_just_pressed("undo"):
+		key_repeat_held = true
+		key_repeat_action = "undo"
+		key_repeat_count = 0
+		key_repeat_due = Time.get_ticks_msec()
+	if Input.is_action_just_released("undo"):
+		if key_repeat_action == "undo":
+			key_repeat_held = false
+	if Input.is_action_just_pressed("redo"):
+		key_repeat_held = true
+		key_repeat_action = "redo"
+		key_repeat_count = 0
+		key_repeat_due = Time.get_ticks_msec()
+	if Input.is_action_just_released("redo"):
+		if key_repeat_action == "redo":
+			key_repeat_held = false
+	if key_repeat_held and Time.get_ticks_msec() >= key_repeat_due:
+		match key_repeat_action:
+			"undo":
+				try_undo()
+			"redo":
+				try_redo()
+		key_repeat_count += 1
+		key_repeat_due = Time.get_ticks_msec() + key_repeat_interval()
 	
 	%HPLabel.text = "HP: %d" % game.hp
 	if game.mag > 0:
@@ -83,6 +97,29 @@ func _process(_dt):
 		%MAGLabel.text = "%d [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color]" % abs(game.mag)
 	%SteamLabel.text = "+ %d [shake rate=10.0 level=3 connected=0]Steam[/shake]" % game.steam
 	%DEFLabel.text = "DEF: %d" % game.defense
+
+var key_repeat_interval_max = 500.0
+var key_repeat_interval_min = 50.0
+func key_repeat_interval():
+	return (key_repeat_interval_max - key_repeat_interval_min) / pow(key_repeat_count, 0.7) + key_repeat_interval_min
+
+func try_undo():
+	var success = undo.undo(game)
+	update_visuals()
+	if sound:
+		if success:
+			sound.play("undo")
+		else:
+			sound.play("nuhuh")
+
+func try_redo():
+	var success = undo.redo(game)
+	update_visuals()
+	if sound:
+		if success:
+			sound.play("redo")
+		else:
+			sound.play("nuhuh")
 
 func save_game():
 	var save := undo.get_save()
