@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://dh35rx5yvx4mw"]
+
+[ext_resource type="PackedScene" uid="uid://053vjaxer4p1" path="res://tiles/enemies/enemy.tscn" id="1_twm2u"]
+[ext_resource type="Texture2D" uid="uid://ca6ogd6t2ie42" path="res://art/fire-guy.png" id="2_xgbgg"]
+[ext_resource type="Script" uid="uid://cj5hakllrmm36" path="res://model/tiles/enemy.gd" id="3_cfxin"]
+
+[sub_resource type="Resource" id="Resource_nswma"]
+script = ExtResource("3_cfxin")
+hp = 10
+attack = 9
+type = 1
+tile_name = "Fireball"
+metadata/_custom_type_script = "uid://cj5hakllrmm36"
+
+[node name="Tile" instance=ExtResource("1_twm2u")]
+data = SubResource("Resource_nswma")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_xgbgg")

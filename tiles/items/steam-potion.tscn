@@ -1,0 +1,31 @@
+[gd_scene load_steps=7 format=3 uid="uid://dcak23f6w45u6"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_rjmfq"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_dbysu"]
+[ext_resource type="Texture2D" uid="uid://ruo204q8snso" path="res://art/steam-potion.png" id="2_fqil2"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_8cd1b"]
+
+[sub_resource type="Resource" id="Resource_hlkfl"]
+script = ExtResource("2_dbysu")
+healing = 5
+steam = 1
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_e5mss"]
+script = ExtResource("4_8cd1b")
+effect = SubResource("Resource_hlkfl")
+tile_name = "S Potion"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_rjmfq")]
+data = SubResource("Resource_e5mss")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_fqil2")
+
+[node name="Label" parent="Control" index="0"]
+z_index = 0
+offset_left = -8.0
+offset_top = -13.0
+offset_right = 0.0
+offset_bottom = 0.0

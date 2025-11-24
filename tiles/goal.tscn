@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtk7iriou0kru"]
+
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_7m6y2"]
+[ext_resource type="Script" uid="uid://bxcwq11i385yq" path="res://model/tiles/goal.gd" id="2_8iqe1"]
+[ext_resource type="Texture2D" uid="uid://dc0xu51v3c2n1" path="res://art/goal.png" id="2_a4ov0"]
+
+[sub_resource type="Resource" id="Resource_t053p"]
+script = ExtResource("2_8iqe1")
+tile_name = "Goal"
+metadata/_custom_type_script = "uid://bxcwq11i385yq"
+
+[node name="Tile" instance=ExtResource("1_7m6y2")]
+z_index = -1
+data = SubResource("Resource_t053p")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_a4ov0")

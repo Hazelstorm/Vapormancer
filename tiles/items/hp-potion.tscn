@@ -1,0 +1,26 @@
+[gd_scene load_steps=7 format=3 uid="uid://c6f22egsrxvx6"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_w6xl0"]
+[ext_resource type="Texture2D" uid="uid://37hhm3a4ndpg" path="res://art/hp-potion.png" id="2_cxkdc"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="3_ddndm"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="3_nc84d"]
+
+[sub_resource type="Resource" id="Resource_nyq0n"]
+script = ExtResource("3_nc84d")
+healing = 10
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_nc84d"]
+script = ExtResource("3_ddndm")
+effect = SubResource("Resource_nyq0n")
+tile_name = "H Potion"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_w6xl0")]
+data = SubResource("Resource_nc84d")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_cxkdc")
+
+[node name="Label" parent="Control" index="0"]
+z_index = 0

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://d3qg4odusrnnb"]
+
+[ext_resource type="Script" uid="uid://cihcb1gpqgea8" path="res://inventory_slot.gd" id="1_urq2k"]
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="2_7qyd5"]
+
+[node name="InventorySlot" type="Control" node_paths=PackedStringArray("tile")]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_urq2k")
+tile = NodePath("Tile")
+
+[node name="Tile" parent="." instance=ExtResource("2_7qyd5")]
+position = Vector2(8, 8)
+
+[node name="Button" type="Button" parent="."]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

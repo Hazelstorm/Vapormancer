@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://bymec6r7380ra"]
+
+[ext_resource type="PackedScene" uid="uid://053vjaxer4p1" path="res://tiles/enemies/enemy.tscn" id="1_bmqgn"]
+[ext_resource type="Texture2D" uid="uid://blf6tqajp2mm" path="res://art/water-sprite.png" id="2_6p0mh"]
+[ext_resource type="Script" uid="uid://cj5hakllrmm36" path="res://model/tiles/enemy.gd" id="2_lss2y"]
+
+[sub_resource type="Resource" id="Resource_o51pm"]
+script = ExtResource("2_lss2y")
+hp = 3
+attack = 3
+tile_name = "Water Sprite"
+metadata/_custom_type_script = "uid://cj5hakllrmm36"
+
+[node name="Tile" instance=ExtResource("1_bmqgn")]
+data = SubResource("Resource_o51pm")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_6p0mh")
+
+[node name="Control" parent="." index="1"]
+mouse_filter = 0

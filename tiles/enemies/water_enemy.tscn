@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://xck4oafrv27r"]
+
+[ext_resource type="PackedScene" uid="uid://053vjaxer4p1" path="res://tiles/enemies/enemy.tscn" id="1_kbxwc"]
+[ext_resource type="Texture2D" uid="uid://c6vcqygsvtgne" path="res://art/water-guy.png" id="2_ijgmf"]
+[ext_resource type="Script" uid="uid://cj5hakllrmm36" path="res://model/tiles/enemy.gd" id="3_wbisl"]
+
+[sub_resource type="Resource" id="Resource_a6ogs"]
+script = ExtResource("3_wbisl")
+hp = 45
+attack = 2
+tile_name = "Slime"
+metadata/_custom_type_script = "uid://cj5hakllrmm36"
+
+[node name="Tile" instance=ExtResource("1_kbxwc")]
+data = SubResource("Resource_a6ogs")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_ijgmf")
+
+[node name="Label" parent="Control" index="0"]
+offset_top = -13.0
+offset_bottom = 0.0

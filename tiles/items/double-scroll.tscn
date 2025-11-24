@@ -1,0 +1,24 @@
+[gd_scene load_steps=7 format=3 uid="uid://sbutos1cd30r"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_pivsl"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_qow4j"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="3_dprkm"]
+[ext_resource type="Texture2D" uid="uid://bd818g4eesq8k" path="res://art/double-scroll.png" id="4_q08h3"]
+
+[sub_resource type="Resource" id="Resource_mf45c"]
+script = ExtResource("2_qow4j")
+double_scroll = true
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_eewfo"]
+script = ExtResource("3_dprkm")
+effect = SubResource("Resource_mf45c")
+stored = true
+tile_name = "Double Scroll"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_pivsl")]
+data = SubResource("Resource_eewfo")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("4_q08h3")

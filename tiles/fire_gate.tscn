@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://cltn2eamkywyk"]
+
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_1dckj"]
+[ext_resource type="Script" uid="uid://cm7kul6xgpade" path="res://model/tiles/gate.gd" id="2_st12y"]
+[ext_resource type="Texture2D" uid="uid://dl5lvbu2qg21k" path="res://art/fire-gate.png" id="3_xymcw"]
+
+[sub_resource type="Resource" id="Resource_st12y"]
+script = ExtResource("2_st12y")
+tile_name = "Fire Gate"
+metadata/_custom_type_script = "uid://cm7kul6xgpade"
+
+[node name="Tile" instance=ExtResource("1_1dckj")]
+z_index = -1
+data = SubResource("Resource_st12y")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_xymcw")

@@ -1,0 +1,244 @@
+[gd_scene load_steps=21 format=4 uid="uid://ctob225fjsihj"]
+
+[ext_resource type="Script" uid="uid://0la564wujqj2" path="res://main.gd" id="1_272bh"]
+[ext_resource type="PackedScene" uid="uid://gtg8iqlqtsbp" path="res://tiles/wall.tscn" id="2_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://cmuhjeop12n30" path="res://tiles/enemies/steam_enemy.tscn" id="2_7mycd"]
+[ext_resource type="PackedScene" uid="uid://xck4oafrv27r" path="res://tiles/enemies/water_enemy.tscn" id="3_272bh"]
+[ext_resource type="PackedScene" uid="uid://cclchf8st1ban" path="res://tiles/player.tscn" id="5_lquwl"]
+[ext_resource type="PackedScene" uid="uid://dh35rx5yvx4mw" path="res://tiles/enemies/fire_enemy.tscn" id="6_5vw27"]
+[ext_resource type="PackedScene" uid="uid://dm6y2ukkg8j1i" path="res://tiles/items/fire-potion.tscn" id="6_vivmo"]
+[ext_resource type="PackedScene" uid="uid://c6f22egsrxvx6" path="res://tiles/items/hp-potion.tscn" id="7_2cqfq"]
+[ext_resource type="FontFile" uid="uid://sva5fdi8a4ux" path="res://fonts-shaders/stan0753.ttf" id="7_272bh"]
+[ext_resource type="Texture2D" uid="uid://c4oulmtncvsqf" path="res://art/undo-button.png" id="7_efxa6"]
+[ext_resource type="Texture2D" uid="uid://dco4luv0c6kn3" path="res://art/default.png" id="8_5vw27"]
+[ext_resource type="Texture2D" uid="uid://bhvhdmkgj0vk0" path="res://art/redo-button.png" id="8_dg77c"]
+[ext_resource type="PackedScene" uid="uid://ddyq2hsil5gi0" path="res://tiles/items/water-potion.tscn" id="8_yaehf"]
+[ext_resource type="Texture2D" uid="uid://b4yv6ca7q37o0" path="res://art/restart-button.png" id="9_ycdy4"]
+[ext_resource type="Shader" uid="uid://b4j4absibj6tt" path="res://fonts-shaders/solid.gdshader" id="11_dg77c"]
+
+[sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_7dm0k"]
+scenes/2/scene = ExtResource("6_vivmo")
+scenes/3/scene = ExtResource("7_2cqfq")
+scenes/4/scene = ExtResource("8_yaehf")
+scenes/9/scene = ExtResource("6_5vw27")
+scenes/10/scene = ExtResource("2_7mycd")
+scenes/11/scene = ExtResource("3_272bh")
+scenes/12/scene = ExtResource("5_lquwl")
+scenes/13/scene = ExtResource("2_0xm2m")
+
+[sub_resource type="TileSet" id="TileSet_ig7tw"]
+custom_data_layer_0/name = "amount"
+custom_data_layer_0/type = 2
+sources/0 = SubResource("TileSetScenesCollectionSource_7dm0k")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ycdy4"]
+shader = ExtResource("11_dg77c")
+shader_parameter/threshold = 0.10000000475
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dg77c"]
+shader = ExtResource("11_dg77c")
+shader_parameter/threshold = 0.050000002375
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w48qg"]
+shader = ExtResource("11_dg77c")
+shader_parameter/threshold = 0.050000002375
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_272bh")
+level_size = Vector2i(16, 16)
+metadata/_edit_lock_ = true
+
+[node name="Layer0" type="TileMapLayer" parent="."]
+unique_name_in_owner = true
+use_parent_material = true
+tile_map_data = PackedByteArray("AAAAAAAAAAAAAAAADQABAAAAAAAAAAAADQACAAAAAAAAAAAADQADAAAAAAAAAAAADQAAAAEAAAAAAAAADQAAAAIAAAAAAAAADQABAAIAAAAAAAAADQAAAAMAAAAAAAAADQAAAAQAAAAAAAAADQABAAQAAAAAAAAADQACAAQAAAAAAAAADQAEAAAAAAAAAAAADQAFAAAAAAAAAAAADQAGAAAAAAAAAAAADQAHAAAAAAAAAAAADQAIAAAAAAAAAAAADQAIAAEAAAAAAAAADQAIAAIAAAAAAAAADQAHAAIAAAAAAAAADQAGAAIAAAAAAAAADQAIAAMAAAAAAAAADQAIAAQAAAAAAAAADQAHAAQAAAAAAAAADQAGAAQAAAAAAAAADQAFAAQAAAAAAAAADQADAAQAAAAAAAAADQACAAMAAAAAAAAACQACAAEAAAAAAAAACQACAAIAAAAAAAAADQAGAAMAAAAAAAAACwAGAAEAAAAAAAAACwABAAEAAAAAAAAAAgAHAAEAAAAAAAAAAgABAAMAAAAAAAAABAAHAAMAAAAAAAAABAAEAAIAAAAAAAAADAAEAAQAAAAAAAAACgA=")
+tile_set = SubResource("TileSet_ig7tw")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -106.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HPLabel" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/font = ExtResource("7_272bh")
+theme_override_font_sizes/font_size = 8
+text = "HP: 9999"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/font = ExtResource("7_272bh")
+theme_override_font_sizes/font_size = 8
+text = "MAG: "
+
+[node name="MAGLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_ycdy4")
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/normal_font = ExtResource("7_272bh")
+theme_override_fonts/mono_font = ExtResource("7_272bh")
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+theme_override_font_sizes/bold_italics_font_size = 8
+theme_override_font_sizes/italics_font_size = 8
+theme_override_font_sizes/mono_font_size = 8
+bbcode_enabled = true
+text = "9999 Water"
+fit_content = true
+autowrap_mode = 0
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Control" type="Control" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
+custom_minimum_size = Vector2(19, 0)
+layout_mode = 2
+
+[node name="SteamLabel" type="RichTextLabel" parent="MarginContainer/VBoxContainer/VBoxContainer/HBoxContainer2"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_dg77c")
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/normal_font = ExtResource("7_272bh")
+theme_override_fonts/mono_font = ExtResource("7_272bh")
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+theme_override_font_sizes/bold_italics_font_size = 8
+theme_override_font_sizes/italics_font_size = 8
+theme_override_font_sizes/mono_font_size = 8
+bbcode_enabled = true
+text = "+ 9999 Steam"
+fit_content = true
+autowrap_mode = 0
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PreviewSprite" type="TextureRect" parent="MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("8_5vw27")
+
+[node name="PreviewCoord" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer2/HBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/font = ExtResource("7_272bh")
+theme_override_font_sizes/font_size = 8
+text = "(99, 99)"
+
+[node name="PreviewName" type="Label" parent="MarginContainer/VBoxContainer/VBoxContainer2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_fonts/font = ExtResource("7_272bh")
+theme_override_font_sizes/font_size = 8
+text = "This is a thing"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PreviewDesc" type="RichTextLabel" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_w48qg")
+clip_contents = false
+layout_mode = 2
+theme_override_colors/default_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_constants/paragraph_separation = 4
+theme_override_fonts/normal_font = ExtResource("7_272bh")
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 8
+theme_override_font_sizes/bold_italics_font_size = 8
+theme_override_font_sizes/italics_font_size = 8
+theme_override_font_sizes/mono_font_size = 8
+bbcode_enabled = true
+text = "HP: 9999
+ATK: 9999
+Your hits deal 9999 damage to it.
+You will take 9999 damage over 9999 turns when battling it.
+9999 [outline_color=\"#4f67ff\"][outline_size=4]Water[/outline_size][/outline_color] or 9999 [shake rate=10.0 level=3 connected=0]Steam[/shake] would help."
+fit_content = true
+scroll_active = false
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -20.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = 60.0
+grow_horizontal = 0
+size_flags_horizontal = 8
+theme_override_constants/separation = 0
+
+[node name="UndoButton" type="TextureButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture_normal = ExtResource("7_efxa6")
+stretch_mode = 3
+
+[node name="RedoButton" type="TextureButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture_normal = ExtResource("8_dg77c")
+stretch_mode = 3
+
+[node name="RestartButton" type="TextureButton" parent="VBoxContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+texture_normal = ExtResource("9_ycdy4")
+stretch_mode = 3
+
+[connection signal="mouse_entered" from="VBoxContainer/UndoButton" to="." method="_on_undo_button_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/UndoButton" to="." method="_on_button_mouse_exited"]
+[connection signal="pressed" from="VBoxContainer/UndoButton" to="." method="_on_undo_button_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/RedoButton" to="." method="_on_redo_button_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/RedoButton" to="." method="_on_button_mouse_exited"]
+[connection signal="pressed" from="VBoxContainer/RedoButton" to="." method="_on_redo_button_pressed"]
+[connection signal="mouse_entered" from="VBoxContainer/RestartButton" to="." method="_on_restart_button_mouse_entered"]
+[connection signal="mouse_exited" from="VBoxContainer/RestartButton" to="." method="_on_button_mouse_exited"]
+[connection signal="pressed" from="VBoxContainer/RestartButton" to="." method="_on_restart_button_pressed"]

@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://gtg8iqlqtsbp"]
+
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_fjp5x"]
+[ext_resource type="Texture2D" uid="uid://be8o1hyt6x17q" path="res://art/wall.png" id="1_xeni0"]
+[ext_resource type="Script" uid="uid://yf23rv8ip5bb" path="res://model/tiles/wall.gd" id="2_lurvr"]
+
+[sub_resource type="Resource" id="Resource_lurvr"]
+script = ExtResource("2_lurvr")
+tile_name = "Wall"
+metadata/_custom_type_script = "uid://yf23rv8ip5bb"
+
+[node name="Tile" instance=ExtResource("1_fjp5x")]
+data = SubResource("Resource_lurvr")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("1_xeni0")

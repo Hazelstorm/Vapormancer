@@ -1,0 +1,23 @@
+[gd_scene load_steps=7 format=3 uid="uid://ddyq2hsil5gi0"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_nc2de"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_56c0f"]
+[ext_resource type="Texture2D" uid="uid://cen783se8ehvv" path="res://art/water-potion.png" id="2_dr421"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_4du1s"]
+
+[sub_resource type="Resource" id="Resource_wq8e4"]
+script = ExtResource("2_56c0f")
+mag = 1
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_og2y8"]
+script = ExtResource("4_4du1s")
+effect = SubResource("Resource_wq8e4")
+tile_name = "W Potion"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_nc2de")]
+data = SubResource("Resource_og2y8")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_dr421")

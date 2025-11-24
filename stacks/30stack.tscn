@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://dawyf4yshqsvq"]
+
+[ext_resource type="PackedScene" uid="uid://lffvp86gfmtq" path="res://stacks/stack.tscn" id="1_nt07g"]
+
+[node name="Stack" instance=ExtResource("1_nt07g")]
+stacks = 30
+
+[node name="Label" parent="Control" index="0"]
+text = "x30"

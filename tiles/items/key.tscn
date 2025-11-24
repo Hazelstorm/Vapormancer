@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://h76p1yiemxe8"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_2g3ta"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_g0tc3"]
+[ext_resource type="Texture2D" uid="uid://c01cmvwnltlmb" path="res://art/key.png" id="3_rf2lh"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_oclym"]
+
+[sub_resource type="Resource" id="Resource_2eiau"]
+script = ExtResource("2_g0tc3")
+key = true
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_m4gxn"]
+script = ExtResource("4_oclym")
+effect = SubResource("Resource_2eiau")
+stored = true
+passive = true
+tile_name = "Key"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_2g3ta")]
+data = SubResource("Resource_m4gxn")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_rf2lh")

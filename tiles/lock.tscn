@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://7w1yo7qgny4s"]
+
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_qiacf"]
+[ext_resource type="Script" uid="uid://bmfgoat0k623u" path="res://model/tiles/lock.gd" id="2_0g3y1"]
+[ext_resource type="Texture2D" uid="uid://nbhq7yh74vmv" path="res://art/lock.png" id="3_bmiym"]
+
+[sub_resource type="Resource" id="Resource_bmiym"]
+script = ExtResource("2_0g3y1")
+tile_name = "Lock"
+metadata/_custom_type_script = "uid://bmfgoat0k623u"
+
+[node name="Tile" instance=ExtResource("1_qiacf")]
+data = SubResource("Resource_bmiym")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_bmiym")

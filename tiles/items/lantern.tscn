@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://t5p6b3cih0cn"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_nyrp5"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="2_i50am"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_kgtx1"]
+[ext_resource type="Texture2D" uid="uid://ds1r2gdo8kcfj" path="res://art/lantern.png" id="3_kgtx1"]
+
+[sub_resource type="Resource" id="Resource_jv7bi"]
+script = ExtResource("2_kgtx1")
+lantern = true
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_bed1k"]
+script = ExtResource("2_i50am")
+effect = SubResource("Resource_jv7bi")
+stored = true
+passive = true
+tile_name = "S Lantern"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_nyrp5")]
+data = SubResource("Resource_bed1k")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_kgtx1")

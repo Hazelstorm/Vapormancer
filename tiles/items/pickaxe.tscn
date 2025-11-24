@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://dg4fmutrc18rk"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_f3513"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_qyqs1"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="3_qj8g8"]
+[ext_resource type="Texture2D" uid="uid://b8y7gkeqpe3i7" path="res://art/pickaxe.png" id="4_vsckf"]
+
+[sub_resource type="Resource" id="Resource_f4cwo"]
+script = ExtResource("2_qyqs1")
+pickaxe = true
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_oahpk"]
+script = ExtResource("3_qj8g8")
+effect = SubResource("Resource_f4cwo")
+stored = true
+passive = true
+tile_name = "Pickaxe"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_f3513")]
+data = SubResource("Resource_oahpk")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("4_vsckf")

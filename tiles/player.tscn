@@ -1,0 +1,16 @@
+[gd_scene load_steps=5 format=3 uid="uid://cclchf8st1ban"]
+
+[ext_resource type="Texture2D" uid="uid://dlaj5lhswwaok" path="res://art/player.png" id="1_7540j"]
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_kegix"]
+[ext_resource type="Script" uid="uid://3na7s8j1vb11" path="res://model/tiles/player.gd" id="2_b2bfo"]
+
+[sub_resource type="Resource" id="Resource_5ijjp"]
+script = ExtResource("2_b2bfo")
+tile_name = "Ewyn"
+metadata/_custom_type_script = "uid://3na7s8j1vb11"
+
+[node name="Tile" instance=ExtResource("1_kegix")]
+data = SubResource("Resource_5ijjp")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("1_7540j")

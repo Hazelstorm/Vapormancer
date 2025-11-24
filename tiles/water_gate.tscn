@@ -1,0 +1,18 @@
+[gd_scene load_steps=5 format=3 uid="uid://cbbbd2hm1bq05"]
+
+[ext_resource type="PackedScene" uid="uid://d4m3jgi1tvxim" path="res://tiles/tile.tscn" id="1_tkf4v"]
+[ext_resource type="Script" uid="uid://cm7kul6xgpade" path="res://model/tiles/gate.gd" id="2_an3mw"]
+[ext_resource type="Texture2D" uid="uid://ufjne74xkdke" path="res://art/water-gate.png" id="2_dpv3q"]
+
+[sub_resource type="Resource" id="Resource_dpv3q"]
+script = ExtResource("2_an3mw")
+is_water = true
+tile_name = "Water Gate"
+metadata/_custom_type_script = "uid://cm7kul6xgpade"
+
+[node name="Tile" instance=ExtResource("1_tkf4v")]
+z_index = -1
+data = SubResource("Resource_dpv3q")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_dpv3q")

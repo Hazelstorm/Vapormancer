@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://cw5haxepd2um"]
+
+[ext_resource type="FontFile" uid="uid://sva5fdi8a4ux" path="res://theme/stan0753.ttf" id="1_8sin8"]
+
+[resource]
+default_font = ExtResource("1_8sin8")
+default_font_size = 8

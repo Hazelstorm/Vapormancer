@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://d4m3jgi1tvxim"]
+
+[ext_resource type="Script" uid="uid://coxed2515uitn" path="res://tiles/tile_actor.gd" id="1_l53t7"]
+[ext_resource type="Texture2D" uid="uid://dco4luv0c6kn3" path="res://art/default.png" id="1_uulph"]
+[ext_resource type="Shader" uid="uid://b4j4absibj6tt" path="res://theme/solid.gdshader" id="3_l53t7"]
+[ext_resource type="FontFile" uid="uid://beaolujxv4q5u" path="res://theme/m3x6.ttf" id="4_ys7py"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_esgmk"]
+shader = ExtResource("3_l53t7")
+shader_parameter/threshold = 0.0
+
+[node name="Tile" type="Node2D"]
+script = ExtResource("1_l53t7")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_uulph")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+mouse_filter = 1
+
+[node name="Label" type="Label" parent="Control"]
+unique_name_in_owner = true
+visible = false
+z_index = 1
+material = SubResource("ShaderMaterial_esgmk")
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -8.0
+offset_top = -12.0
+offset_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+theme_override_colors/font_outline_color = Color(0.09803922, 0.003921569, 0.101960786, 1)
+theme_override_constants/outline_size = 1
+theme_override_fonts/font = ExtResource("4_ys7py")
+text = "x1"
+
+[connection signal="mouse_entered" from="Control" to="." method="_on_control_mouse_entered"]
+[connection signal="mouse_exited" from="Control" to="." method="_on_control_mouse_exited"]

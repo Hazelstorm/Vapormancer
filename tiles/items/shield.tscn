@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://ccfcrrvh6e3wl"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_ewqnh"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_yy4h6"]
+[ext_resource type="Texture2D" uid="uid://cy4tfb1wxw474" path="res://art/shield.png" id="3_e57t4"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_jfpay"]
+
+[sub_resource type="Resource" id="Resource_hpxrq"]
+script = ExtResource("2_yy4h6")
+shield = 1
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_k0opy"]
+script = ExtResource("4_jfpay")
+effect = SubResource("Resource_hpxrq")
+stored = true
+passive = true
+tile_name = "Shield"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_ewqnh")]
+data = SubResource("Resource_k0opy")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_e57t4")

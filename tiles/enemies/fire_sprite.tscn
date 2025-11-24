@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://dunddppevdlta"]
+
+[ext_resource type="PackedScene" uid="uid://053vjaxer4p1" path="res://tiles/enemies/enemy.tscn" id="1_2ph6t"]
+[ext_resource type="Texture2D" uid="uid://tt04mu877hcs" path="res://art/fire-sprite.png" id="2_mw1vc"]
+[ext_resource type="Script" uid="uid://cj5hakllrmm36" path="res://model/tiles/enemy.gd" id="3_uqbt5"]
+
+[sub_resource type="Resource" id="Resource_13fwe"]
+script = ExtResource("3_uqbt5")
+hp = 3
+attack = 3
+type = 1
+tile_name = "Fire Sprite"
+metadata/_custom_type_script = "uid://cj5hakllrmm36"
+
+[node name="Tile" instance=ExtResource("1_2ph6t")]
+data = SubResource("Resource_13fwe")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_mw1vc")

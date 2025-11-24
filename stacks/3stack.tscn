@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl8ceko3knx7s"]
+
+[ext_resource type="PackedScene" uid="uid://lffvp86gfmtq" path="res://stacks/stack.tscn" id="1_cb703"]
+
+[node name="Stack" instance=ExtResource("1_cb703")]
+stacks = 3
+
+[node name="Label" parent="Control" index="0"]
+text = "x3"

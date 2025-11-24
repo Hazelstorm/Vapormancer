@@ -1,0 +1,19 @@
+[gd_scene load_steps=5 format=3 uid="uid://cmuhjeop12n30"]
+
+[ext_resource type="PackedScene" uid="uid://053vjaxer4p1" path="res://tiles/enemies/enemy.tscn" id="1_yw47t"]
+[ext_resource type="Texture2D" uid="uid://ccjrk0ijdg8k" path="res://art/steam-guy.png" id="2_dylw3"]
+[ext_resource type="Script" uid="uid://cj5hakllrmm36" path="res://model/tiles/enemy.gd" id="3_y6x24"]
+
+[sub_resource type="Resource" id="Resource_f2fkb"]
+script = ExtResource("3_y6x24")
+hp = 20
+attack = 2
+type = 2
+tile_name = "Whirlwind"
+metadata/_custom_type_script = "uid://cj5hakllrmm36"
+
+[node name="Tile" instance=ExtResource("1_yw47t")]
+data = SubResource("Resource_f2fkb")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_dylw3")

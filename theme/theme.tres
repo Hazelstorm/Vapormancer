@@ -1,0 +1,61 @@
+[gd_resource type="Theme" load_steps=8 format=3 uid="uid://3jef02jmdhs8"]
+
+[ext_resource type="Texture2D" uid="uid://bcx48tsom0avx" path="res://art/panel-nine-patch.png" id="1_8ab6e"]
+[ext_resource type="FontFile" uid="uid://sva5fdi8a4ux" path="res://theme/stan0753.ttf" id="2_nrt0f"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nrt0f"]
+content_margin_left = 3.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+texture = ExtResource("1_8ab6e")
+texture_margin_left = 1.0
+texture_margin_top = 1.0
+texture_margin_right = 1.0
+texture_margin_bottom = 1.0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+region_rect = Rect2(0, 0, 12, 12)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gco77"]
+content_margin_left = 3.0
+content_margin_top = 2.0
+content_margin_right = 2.0
+content_margin_bottom = 2.0
+texture = ExtResource("1_8ab6e")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+region_rect = Rect2(0, 0, 12, 12)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4yjuo"]
+texture = ExtResource("1_8ab6e")
+texture_margin_left = 3.0
+texture_margin_top = 3.0
+texture_margin_right = 3.0
+texture_margin_bottom = 3.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_nrt0f"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_gco77"]
+
+[resource]
+default_font = ExtResource("2_nrt0f")
+default_font_size = 8
+Button/colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+Button/colors/font_hover_color = Color(1, 0.49803922, 0, 1)
+Button/colors/font_pressed_color = Color(0.09803922, 0.003921569, 0.101960786, 1)
+Button/colors/icon_hover_color = Color(1, 0.49803922, 0, 1)
+Button/colors/icon_normal_color = Color(1, 0.92156863, 0.84705883, 1)
+Button/colors/icon_pressed_color = Color(0.09803922, 0.003921569, 0.101960786, 1)
+Button/styles/hover = SubResource("StyleBoxTexture_nrt0f")
+Button/styles/normal = SubResource("StyleBoxTexture_nrt0f")
+Button/styles/pressed = SubResource("StyleBoxTexture_gco77")
+PanelContainer/styles/panel = SubResource("StyleBoxTexture_4yjuo")
+TextEdit/colors/caret_color = Color(1, 0.92156863, 0.84705883, 1)
+TextEdit/colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
+TextEdit/styles/focus = SubResource("StyleBoxEmpty_nrt0f")
+TextEdit/styles/normal = SubResource("StyleBoxEmpty_gco77")

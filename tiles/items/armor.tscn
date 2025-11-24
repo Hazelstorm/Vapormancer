@@ -1,0 +1,25 @@
+[gd_scene load_steps=7 format=3 uid="uid://c4lf6olbk7c3b"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_evto5"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_ty8b8"]
+[ext_resource type="Texture2D" uid="uid://dr44vsob8m8ft" path="res://art/armor.png" id="3_8cspa"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_hs2dr"]
+
+[sub_resource type="Resource" id="Resource_nmf5a"]
+script = ExtResource("2_ty8b8")
+armor = 1
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_m23mv"]
+script = ExtResource("4_hs2dr")
+effect = SubResource("Resource_nmf5a")
+stored = true
+passive = true
+tile_name = "Armor"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_evto5")]
+data = SubResource("Resource_m23mv")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_8cspa")

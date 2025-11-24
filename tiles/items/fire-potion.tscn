@@ -1,0 +1,23 @@
+[gd_scene load_steps=7 format=3 uid="uid://dm6y2ukkg8j1i"]
+
+[ext_resource type="PackedScene" uid="uid://2v5rc5tags5d" path="res://tiles/items/item.tscn" id="1_nwwgj"]
+[ext_resource type="Texture2D" uid="uid://bawrbo16aslv6" path="res://art/fire-potion.png" id="2_7ye13"]
+[ext_resource type="Script" uid="uid://japd6qr137lo" path="res://model/tiles/item_effect.gd" id="2_wktxs"]
+[ext_resource type="Script" uid="uid://biw4qg5fvb6tq" path="res://model/tiles/item.gd" id="4_l6oyf"]
+
+[sub_resource type="Resource" id="Resource_dw2hs"]
+script = ExtResource("2_wktxs")
+mag = -1
+metadata/_custom_type_script = "uid://japd6qr137lo"
+
+[sub_resource type="Resource" id="Resource_q3e8y"]
+script = ExtResource("4_l6oyf")
+effect = SubResource("Resource_dw2hs")
+tile_name = "F Potion"
+metadata/_custom_type_script = "uid://biw4qg5fvb6tq"
+
+[node name="Tile" instance=ExtResource("1_nwwgj")]
+data = SubResource("Resource_q3e8y")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_7ye13")
