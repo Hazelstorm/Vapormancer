@@ -19,7 +19,7 @@ func _do(game: Game) -> bool:
 		inv_item.stacks = item.stacks
 		game.inventory.append(inv_item)
 	else:
-		game.inventory[idx].stacks += 1
+		game.inventory[idx].stacks += item.stacks
 	return true
 func _undo(game: Game) -> bool:
 	if !item:
@@ -28,7 +28,7 @@ func _undo(game: Game) -> bool:
 	if idx == -1:
 		game.inventory.remove_at(game.inventory.size() - 1)
 	else:
-		game.inventory[idx].stacks -= 1
+		game.inventory[idx].stacks -= item.stacks
 	return true
 func as_string() -> String:
 	return ""

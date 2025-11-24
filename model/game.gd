@@ -202,33 +202,35 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 		var move_event = MoveEvent.new().setup(player, coords)
 		move_event.coords = coords
 		if target_tile is Wall:
-			for inv_item in inventory:
-				if inv_item.item.effect.pickaxe:
-					var lose_item_event = LoseItemEvent.new().setup(inv_item.item, self)
-					var unlock_event = UnlockEvent.new().setup(target_tile)
-					unlock_event.coords = coords
-					undo.commit_event(move_event, self)
-					undo.commit_event(lose_item_event, self)
-					undo.commit_event(unlock_event, self)
-					undo.commit_turn()
-					if sound:
-						sound.play("destroywall")
-					return true
-			return false
+			if !target_tile.destroyed:
+				for inv_item in inventory:
+					if inv_item.item.effect.pickaxe:
+						var lose_item_event = LoseItemEvent.new().setup(inv_item, self)
+						var unlock_event = UnlockEvent.new().setup(target_tile)
+						unlock_event.coords = coords
+						undo.commit_event(move_event, self)
+						undo.commit_event(lose_item_event, self)
+						undo.commit_event(unlock_event, self)
+						undo.commit_turn()
+						if sound:
+							sound.play("destroywall")
+						return true
+				return false
 		elif target_tile is Lock:
-			for inv_item in inventory:
-				if inv_item.item.effect.key:
-					var lose_item_event = LoseItemEvent.new().setup(inv_item.item, self)
-					var unlock_event = UnlockEvent.new().setup(target_tile)
-					unlock_event.coords = coords
-					undo.commit_event(move_event, self)
-					undo.commit_event(lose_item_event, self)
-					undo.commit_event(unlock_event, self)
-					undo.commit_turn()
-					if sound:
-						sound.play("openlock")
-					return true
-			return false
+			if target_tile.locked:
+				for inv_item in inventory:
+					if inv_item.item.effect.key:
+						var lose_item_event = LoseItemEvent.new().setup(inv_item, self)
+						var unlock_event = UnlockEvent.new().setup(target_tile)
+						unlock_event.coords = coords
+						undo.commit_event(move_event, self)
+						undo.commit_event(lose_item_event, self)
+						undo.commit_event(unlock_event, self)
+						undo.commit_turn()
+						if sound:
+							sound.play("openlock")
+						return true
+				return false
 		elif target_tile is Enemy:
 			if target_tile.alive:
 				if get_damage(target_tile) >= hp:
@@ -252,7 +254,7 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 			if !target_tile.collected:
 				if target_tile.stored:
 					var gain_item_event = GainItemEvent.new().setup(target_tile, self)
-					var store_event = StoreEvent.new().setup(target_tile, self)
+					var store_event = StoreEvent.new().setup(target_tile)
 					store_event.coords = coords
 					undo.commit_event(move_event, self)
 					undo.commit_event(gain_item_event, self)
@@ -298,7 +300,7 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 func use_item(idx: int, undo: Undo, sound: SoundServer = null) -> bool:
 	if inventory.size() <= idx:
 		return false
-	var lose_item_event = LoseItemEvent.new().setup(inventory[idx].item, self)
+	var lose_item_event = LoseItemEvent.new().setup(inventory[idx], self)
 	var use_event = UseItemEvent.new().setup(inventory[idx].item, self)
 	undo.commit_event(lose_item_event, self)
 	undo.commit_event(use_event, self)

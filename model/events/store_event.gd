@@ -4,14 +4,14 @@ class_name StoreEvent extends Event
 @export var name: String
 @export var stacks: int
 
-func setup(_item: Item, game: Game):
+func setup(_item: Item):
 	item = _item
 	if item:
 		name = item.tile_name
 		stacks = item.stacks
 	return self
 
-func _do(game: Game) -> bool:
+func _do(_game: Game) -> bool:
 	if !item:
 		print("ERROR StoreItemEvent @ (%d,%d) failed. Reason: null item" % [coords.x, coords.y])
 		return false
@@ -20,7 +20,7 @@ func _do(game: Game) -> bool:
 	item.collected = true
 	return true
 
-func _undo(game: Game) -> bool:
+func _undo(_game: Game) -> bool:
 	if !item:
 		print("ERROR Undo StoreEvent @ (%d,%d) failed. Reason: null item" % [coords.x, coords.y])
 		return false

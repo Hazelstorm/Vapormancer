@@ -4,11 +4,11 @@ class_name LoseItemEvent extends Event
 @export var idx: int
 @export var last: bool
 
-func setup(_item: Item, game: Game):
-	item = _item
-	if item:
+func setup(inv_item: InvItem, game: Game):
+	if inv_item:
+		item = inv_item.item
 		idx = game.find_item(item)
-		last = (item.stacks == 1)
+		last = (inv_item.stacks == 1)
 	return self
 
 func _do(game: Game) -> bool:

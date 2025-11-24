@@ -314,7 +314,7 @@ func handle_mouse_hover():
 				preview_desc = (
 					"Your current health. Don't let it reach 0!\n" + 
 					"You lose health by battling enemies.\n" +
-					"When battling an enemy, you take turns landing [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] on each other until one of you dies. You always attack first."
+					"When battling an enemy, you take turns landing [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] on each other until one of you dies. You always take the first turn."
 				)
 			5:
 				preview_sprite = null
@@ -324,7 +324,7 @@ func handle_mouse_hover():
 					"There are three types of MAG:\n" +
 					"[outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color]: Adds to your damage on [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] against [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color] enemies. Cancels out with [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color] MAG.\n" +
 					"[color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color]: Adds to your damage on [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] against [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color] enemies. Cancels out with [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color] MAG.\n" +
-					"[shake rate=10.0 level=3 connected=0]Steam[/shake]: Adds to your damage on [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] against all enemies."
+					"[shake rate=10.0 level=3 connected=0]Steam[/shake]: Adds to your damage on [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] against [u]all[/u] enemies."
 				)
 			6:
 				preview_sprite = null
@@ -333,7 +333,7 @@ func handle_mouse_hover():
 			7:
 				preview_sprite = null
 				preview_name = "ITEMS"
-				preview_desc = "Your current held items.\nSome items do something as soon as you collect them, some provide a constant effect while you're holding them, others have to be used by clicking on them.\nHover your cursor over various items around the level to learn what they do!"
+				preview_desc = "Your current held items.\nSome items do something as soon as you [u]collect[/u] them. Some provide a constant effect while you're [u]holding[/u] them. Some held items have to be [u]used[/u] by clicking on them.\nHover your cursor over various items around the level to learn what they do!"
 	elif inventory_hover:
 		preview_sprite = inventory_hover.tile.get_node("Sprite2D").texture
 		preview_name = inventory_hover.inv_item.item.tile_name
