@@ -1,6 +1,7 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://3jef02jmdhs8"]
+[gd_resource type="Theme" load_steps=9 format=3 uid="uid://3jef02jmdhs8"]
 
 [ext_resource type="Texture2D" uid="uid://bcx48tsom0avx" path="res://art/panel-nine-patch.png" id="1_8ab6e"]
+[ext_resource type="Texture2D" uid="uid://cmdxocu6xo5gv" path="res://art/panel-pressed-nine-patch.png" id="2_4yjuo"]
 [ext_resource type="FontFile" uid="uid://sva5fdi8a4ux" path="res://theme/stan0753.ttf" id="2_nrt0f"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_nrt0f"]
@@ -22,7 +23,7 @@ content_margin_left = 3.0
 content_margin_top = 2.0
 content_margin_right = 2.0
 content_margin_bottom = 2.0
-texture = ExtResource("1_8ab6e")
+texture = ExtResource("2_4yjuo")
 texture_margin_left = 3.0
 texture_margin_top = 3.0
 texture_margin_right = 3.0

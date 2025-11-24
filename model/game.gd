@@ -87,14 +87,17 @@ func get_turns(enemy: Enemy) -> int:
 		return 9999
 	@warning_ignore("integer_division")
 	return (enemy.get_hp() - 1) / get_attack(enemy)
-
-func get_damage(enemy: Enemy) -> int:
+func get_shielded_turns(enemy: Enemy) -> int:
 	var shield = 0
-	var armor = defense
 	for inv_item in inventory:
 		shield += inv_item.item.effect.shield * inv_item.stacks
+	return max(0, get_turns(enemy) - shield)
+
+func get_damage(enemy: Enemy) -> int:
+	var armor = defense
+	for inv_item in inventory:
 		armor += inv_item.item.effect.armor * inv_item.stacks
-	return max(0, get_turns(enemy) - shield) * max(0, enemy.get_attack() - armor)
+	return get_shielded_turns(enemy) * max(0, enemy.get_attack() - armor)
 
 # returns index the item is found at, or -1
 func find_item(item: Item) -> int:
@@ -208,13 +211,18 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 						var lose_item_event = LoseItemEvent.new().setup(inv_item, self)
 						var unlock_event = UnlockEvent.new().setup(target_tile)
 						unlock_event.coords = coords
-						undo.commit_event(move_event, self)
-						undo.commit_event(lose_item_event, self)
-						undo.commit_event(unlock_event, self)
+						var success = true
+						success = success and undo.commit_event(move_event, self)
+						success = success and undo.commit_event(lose_item_event, self)
+						success = success and undo.commit_event(unlock_event, self)
 						undo.commit_turn()
-						if sound:
-							sound.play("destroywall")
+						if !success:
+							undo.undo(self)
+							try_sound("nuhuh", sound)
+							return false
+						try_sound("destroywall", sound)
 						return true
+				try_sound("nuhuh", sound)
 				return false
 		elif target_tile is Lock:
 			if target_tile.locked:
@@ -223,32 +231,42 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 						var lose_item_event = LoseItemEvent.new().setup(inv_item, self)
 						var unlock_event = UnlockEvent.new().setup(target_tile)
 						unlock_event.coords = coords
-						undo.commit_event(move_event, self)
-						undo.commit_event(lose_item_event, self)
-						undo.commit_event(unlock_event, self)
+						var success = true
+						success = success and undo.commit_event(move_event, self)
+						success = success and undo.commit_event(lose_item_event, self)
+						success = success and undo.commit_event(unlock_event, self)
 						undo.commit_turn()
-						if sound:
-							sound.play("openlock")
+						if !success:
+							undo.undo(self)
+							try_sound("nuhuh", sound)
+							return false
+						try_sound("openlock", sound)
 						return true
+				try_sound("nuhuh", sound)
 				return false
 		elif target_tile is Enemy:
 			if target_tile.alive:
 				if get_damage(target_tile) >= hp:
+					try_sound("nuhuh", sound)
 					return false
 				else:
 					var battle_event = BattleEvent.new().setup(target_tile, self)
 					battle_event.coords = coords
-					undo.commit_event(move_event, self)
-					undo.commit_event(battle_event, self)
+					var success = true
+					success = success and undo.commit_event(move_event, self)
+					success = success and undo.commit_event(battle_event, self)
 					undo.commit_turn()
-					if sound:
-						match target_tile.type:
-							Enemy.Type.Fire:
-								sound.play("killfire")
-							Enemy.Type.Water:
-								sound.play("killwater")
-							Enemy.Type.Steam:
-								sound.play("killsteam")
+					if !success:
+						undo.undo(self)
+						try_sound("nuhuh", sound)
+						return false
+					match target_tile.type:
+						Enemy.Type.Fire:
+							try_sound("killfire", sound)
+						Enemy.Type.Water:
+							try_sound("killwater", sound)
+						Enemy.Type.Steam:
+							try_sound("killsteam", sound)
 					return true
 		elif target_tile is Item:
 			if !target_tile.collected:
@@ -256,45 +274,55 @@ func do_move(coords: Vector2i, undo: Undo, sound: SoundServer = null) -> bool:
 					var gain_item_event = GainItemEvent.new().setup(target_tile, self)
 					var store_event = StoreEvent.new().setup(target_tile)
 					store_event.coords = coords
-					undo.commit_event(move_event, self)
-					undo.commit_event(gain_item_event, self)
-					undo.commit_event(store_event, self)
+					var success = true
+					success = success and undo.commit_event(move_event, self)
+					success = success and undo.commit_event(gain_item_event, self)
+					success = success and undo.commit_event(store_event, self)
 					undo.commit_turn()
+					if !success:
+						undo.undo(self)
+						try_sound("nuhuh", sound)
+						return false
 				else:
 					var collect_event = CollectEvent.new().setup(target_tile)
 					collect_event.coords = coords
-					undo.commit_event(move_event, self)
-					undo.commit_event(collect_event, self)
+					var success = true
+					success = success and undo.commit_event(move_event, self)
+					success = success and undo.commit_event(collect_event, self)
 					undo.commit_turn()
-				if sound:
-					if target_tile.effect.mag < 0:
-						sound.play("potionfire")
-					elif target_tile.effect.mag > 0:
-						sound.play("potionwater")
-					elif target_tile.effect.steam:
-						sound.play("potionsteam")
-					elif target_tile.effect.healing:
-						sound.play("potionhp")
-					elif target_tile.effect.key:
-						sound.play("keypickup")
-					elif (
-						target_tile.effect.armor or
-						target_tile.effect.shield or
-						target_tile.effect.pickaxe
-					):
-						sound.play("genericpickup")
-					else:
-						sound.play("mysteriouspickup")
+					if !success:
+						undo.undo(self)
+						try_sound("nuhuh", sound)
+						return false
+				if target_tile.effect.mag < 0:
+					try_sound("potionfire", sound)
+				elif target_tile.effect.mag > 0:
+					try_sound("potionwater", sound)
+				elif target_tile.effect.steam:
+					try_sound("potionsteam", sound)
+				elif target_tile.effect.healing:
+					try_sound("potionhp", sound)
+				elif target_tile.effect.key:
+					try_sound("keypickup", sound)
+				elif (
+					target_tile.effect.armor or
+					target_tile.effect.shield or
+					target_tile.effect.pickaxe
+				):
+					try_sound("genericpickup", sound)
+				else:
+					try_sound("mysteriouspickup", sound)
 				return true
 		elif target_tile is Gate:
 			if !target_tile.is_passable(mag):
+				try_sound("nuhuh", sound)
 				return false
 		# default
 		if coords != player.coords:
 			undo.commit_event(move_event, self)
-			if sound:
-				sound.play("movecycle")
+			try_sound("movecycle", sound)
 			return true
+	try_sound("nuhuh", sound)
 	return false
 
 func use_item(idx: int, undo: Undo, sound: SoundServer = null) -> bool:
@@ -305,6 +333,9 @@ func use_item(idx: int, undo: Undo, sound: SoundServer = null) -> bool:
 	undo.commit_event(lose_item_event, self)
 	undo.commit_event(use_event, self)
 	undo.commit_turn()
-	if sound:
-		sound.play("useitem")
+	try_sound("useitem", sound)
 	return true
+
+func try_sound(name: String, sound: SoundServer):
+	if sound:
+		sound.play(name)

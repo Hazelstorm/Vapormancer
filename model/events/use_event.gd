@@ -2,10 +2,12 @@ class_name UseItemEvent extends Event
 
 @export var item: Item
 @export var name: String
+@export var idx: int
 
 func setup(_item: Item, game: Game):
 	item = _item
 	name = item.tile_name
+	idx = game.find_item(item)
 	return self
 
 func _do(game: Game) -> bool:
