@@ -116,7 +116,7 @@ func get_help_string(enemy: Enemy) -> String:
 	
 	match enemy.type:
 		Enemy.Type.Water:
-			if get_turns(enemy) != 0:
+			if get_shielded_turns(enemy) != 0:
 				help_string_items.append("%d [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color] or %d [shake rate=10.0 level=3 connected=0]Steam[/shake] would help." % [
 					to_help - steam + mag,
 					to_help - steam + min(0, mag)
@@ -127,7 +127,7 @@ func get_help_string(enemy: Enemy) -> String:
 					to_hurt
 				])
 		Enemy.Type.Fire:
-			if get_turns(enemy) != 0:
+			if get_shielded_turns(enemy) != 0:
 				help_string_items.append("%d [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color] or %d [shake rate=10.0 level=3 connected=0]Steam[/shake] would help." % [
 					to_help - steam - mag,
 					to_help - steam - max(0, mag)
@@ -138,7 +138,7 @@ func get_help_string(enemy: Enemy) -> String:
 					to_hurt
 				])
 		Enemy.Type.Steam:
-			if get_turns(enemy) != 0:
+			if get_shielded_turns(enemy) != 0:
 				help_string_items.append("%d [shake rate=10.0 level=3 connected=0]Steam[/shake] would help." % [to_help - steam])
 	return "\n".join(help_string_items)
 

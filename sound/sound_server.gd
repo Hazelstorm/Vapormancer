@@ -42,7 +42,11 @@ func _ready():
 		add_child(speaker)
 		speakers[sound] = speaker;
 		speaker.stream = sounds[sound]
-		speaker.max_polyphony = 4
+		speaker.bus = "SFX"
+		if sound == "movecycle":
+			speaker.max_polyphony = 1
+		else:
+			speaker.max_polyphony = 4
 
 func _process(_dt):
 	sounds_played_this_frame = {}

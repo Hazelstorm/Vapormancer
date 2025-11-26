@@ -1,12 +1,20 @@
 class_name Main extends Control
 
 const INVENTORY_SLOT = preload("uid://d3qg4odusrnnb")
+const SOUND_BUTTON_MUTED = preload("uid://dgemm8310pjis")
+const SOUND_BUTTON_UNMUTED = preload("uid://cpenobkdaquey")
 
 @export var cheats_enabled := true
 
 var game := Game.new()
 var undo := Undo.new()
 @onready var sound = %SoundServer
+@onready var playback: AudioStreamPlaybackInteractive = %MusicStream.get_stream_playback()
+
+# user preferences
+var prefs := UserPreferences.new()
+
+var game_interactable := false
 
 var selected_save_slot := 0
 @export var clear_confirmation_timer: Timer
@@ -40,8 +48,13 @@ func _on_stack_layer_child_entered_tree(stack):
 func _ready():
 	undo.reset(game)
 	clear_confirmation_timer.timeout.connect(_reset_clear_confirmation)
-	
 	game.setup_astar()
+	
+	load_user_prefs()
+	if prefs.tutorial_seen:
+		%ColorRect.hide()
+		game_interactable = true
+	update_volume()
 	
 	# tile layers need a frame to process
 	await get_tree().process_frame
@@ -53,8 +66,20 @@ func _process(_dt):
 	handle_mouse_click()
 	handle_mouse_hover()
 	handle_cheat_inputs()
+	update_volume()
 	
-	if Input.is_action_just_pressed("reset"):
+	var clip_index: int
+	if game.mag >= game.steam + 5:
+		clip_index = 2
+	elif game.mag <= -game.steam - 5:
+		clip_index = 1
+	else:
+		clip_index = 0
+	
+	if playback.get_current_clip_index() != clip_index:
+		playback.switch_to_clip(clip_index)
+	
+	if Input.is_action_just_pressed("reset") and game_interactable:
 		var success = undo.reset(game)
 		update_visuals()
 		if sound:
@@ -88,6 +113,49 @@ func _process(_dt):
 		key_repeat_count += 1
 		key_repeat_due = Time.get_ticks_msec() + key_repeat_interval()
 	
+	if Input.is_action_just_pressed("master_up"):
+		if prefs.master_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.master_vol = prefs.master_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("master_down"):
+		if prefs.master_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.master_vol = prefs.master_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("music_up"):
+		if prefs.music_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.music_vol = prefs.music_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("music_down"):
+		if prefs.music_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.music_vol = prefs.music_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("sfx_up"):
+		if prefs.sfx_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.sfx_vol = prefs.sfx_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("sfx_down"):
+		if prefs.sfx_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.sfx_vol = prefs.sfx_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	
 	%HPLabel.text = "HP: %d" % game.hp
 	if game.mag > 0:
 		%MAGLabel.text = "%d [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color]" % abs(game.mag)
@@ -104,6 +172,8 @@ func key_repeat_interval():
 	return (key_repeat_interval_max - key_repeat_interval_min) / pow(key_repeat_count, 0.7) + key_repeat_interval_min
 
 func try_undo():
+	if !game_interactable:
+		return
 	var success = undo.undo(game)
 	update_visuals()
 	if sound:
@@ -113,6 +183,8 @@ func try_undo():
 			sound.play("nuhuh")
 
 func try_redo():
+	if !game_interactable:
+		return
 	var success = undo.redo(game)
 	update_visuals()
 	if sound:
@@ -211,6 +283,13 @@ func import_save():
 	update_save_slot_preview()
 	sound.play("savestate")
 
+func save_user_prefs():
+	ResourceSaver.save(prefs, "user://prefs.tres")
+
+func load_user_prefs():
+	if FileAccess.file_exists("user://prefs.tres"):
+		prefs = ResourceLoader.load("user://prefs.tres")
+
 func _on_prev_save_button_pressed():
 	selected_save_slot = posmod(selected_save_slot - 1, 16)
 	update_save_slot_preview()
@@ -275,11 +354,37 @@ func _update_save_slot_preview(_game: Game, error := ""):
 func handle_mouse_click():
 	
 	var mouse_coord: Vector2i = %TileLayer.local_to_map(%TileLayer.to_local(get_global_mouse_position()))
-	if Input.is_action_just_pressed("mouse_click"):
+	if Input.is_action_just_pressed("mouse_click") and game_interactable:
 		game.do_move(mouse_coord, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("ui_up"):
+		game.do_move(game.player.coords + Vector2i.UP, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("ui_right"):
+		game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("ui_down"):
+		game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("ui_left"):
+		game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("up"):
+		game.do_move(game.player.coords + Vector2i.UP, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("right"):
+		game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("down"):
+		game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
+		update_visuals()
+	if Input.is_action_just_pressed("left"):
+		game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
 		update_visuals()
 
 func _on_inventory_slot_pressed(slot: InventorySlot):
+	if !game_interactable:
+		return
 	if slot.inv_item.item.passive:
 		return
 	game.use_item(game.inventory.find(slot.inv_item), undo, sound)
@@ -302,6 +407,8 @@ func _on_def_label_mouse_entered():
 	ui_hover = 6
 func _on_items_mouse_entered():
 	ui_hover = 7
+func _on_mute_button_mouse_entered():
+	ui_hover = 8
 func _on_button_mouse_exited():
 	ui_hover = 0
 
@@ -323,7 +430,7 @@ func handle_mouse_hover():
 	hover_path.assign([] if out_of_bounds else game.pathfind(game.player.coords, mouse_coord))
 	
 	# show coordinates if in-bounds
-	if !out_of_bounds:
+	if !out_of_bounds and game_interactable:
 		%PreviewCoord.show()
 		%PreviewCoord.text = "(%d, %d)" % [mouse_coord.x, mouse_coord.y]
 	else:
@@ -346,7 +453,6 @@ func handle_mouse_hover():
 				preview_name = "Restart"
 				preview_desc = undo.get_stack_string()
 			4:
-				preview_sprite = null
 				preview_name = "HP"
 				preview_desc = (
 					"Your current health. Don't let it reach 0!\n" + 
@@ -354,7 +460,6 @@ func handle_mouse_hover():
 					"When battling an enemy, you take turns landing [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] on each other until one of you dies. You always take the first turn."
 				)
 			5:
-				preview_sprite = null
 				preview_name = "MAG"
 				preview_desc = (
 					"Your current magic levels.\n" +
@@ -364,20 +469,33 @@ func handle_mouse_hover():
 					"[shake rate=10.0 level=3 connected=0]Steam[/shake]: Adds to your damage on [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] against [u]all[/u] enemies."
 				)
 			6:
-				preview_sprite = null
 				preview_name = "DEF"
 				preview_desc = "Your current defense.\nDefense subtracts damage each time an enemy [color=#19011a][outline_color=#ffebd8][outline_size=5]hits[/outline_size][/outline_color][/color] you."
 			7:
-				preview_sprite = null
 				preview_name = "ITEMS"
 				preview_desc = "Your current held items.\nSome items do something as soon as you [u]collect[/u] them. Some provide a constant effect while you're [u]holding[/u] them. Some held items have to be [u]used[/u] by clicking on them.\nHover your cursor over various items around the level to learn what they do!"
+			8:
+				preview_name = "Sound"
+				preview_desc = (
+					"Click to toggle mute or use keys to adjust volume:\n" +
+					"Master: %d%s (U/J)\n" +
+					"Music: %d%s (I/K)\n" +
+					"SFX: %d%s (O/L)"
+				) % [
+					prefs.master_vol if !prefs.muted else 0,
+					"%",
+					prefs.music_vol,
+					"%",
+					prefs.sfx_vol,
+					"%",
+				]
 	elif inventory_hover:
 		preview_sprite = inventory_hover.tile.get_node("Sprite2D").texture
 		preview_name = inventory_hover.inv_item.item.tile_name
 		preview_desc = get_item_description(inventory_hover.tile.data)
 		if !inventory_hover.inv_item.item.passive:
 			show_cursor_at(inventory_hover.get_node("Tile").global_position)
-	elif hover_tile and !out_of_bounds:
+	elif hover_tile and !out_of_bounds and game_interactable:
 		if hover_tile is Player:
 			preview_sprite = hover_tile.actor.get_node("Sprite2D").texture
 			preview_name = hover_tile.tile_name
@@ -423,7 +541,7 @@ func handle_mouse_hover():
 				game.get_turns(hover_tile) + 1,
 				"hit" if game.get_turns(hover_tile) == 0 else "hits",
 				game.get_damage(hover_tile),
-				game.get_turns(hover_tile),
+				game.get_shielded_turns(hover_tile),
 				"hit" if game.get_turns(hover_tile) == 1 else "hits",
 				game.get_help_string(hover_tile)
 			]
@@ -460,7 +578,7 @@ func handle_mouse_hover():
 	
 	if Input.is_action_pressed("control"):
 		preview_desc = undo.get_stack_string()
-	
+		
 	if game.player and game.goal and game.player.coords == game.goal.coords:
 		preview_desc = game.get_win_string()
 	
@@ -479,10 +597,8 @@ func handle_cheat_inputs():
 		delta += 1
 	if Input.is_action_just_pressed("cheat_subtract"):
 		delta -= 1
-	if Input.is_action_pressed("cheat_water"):
+	if Input.is_action_pressed("cheat_mag"):
 		game.mag += delta
-	if Input.is_action_pressed("cheat_fire"):
-		game.mag -= delta
 	if Input.is_action_pressed("cheat_steam"):
 		game.steam += delta
 	if Input.is_action_pressed("cheat_hp"):
@@ -524,6 +640,21 @@ func update_visuals():
 	for c in sorted_nodes:
 		%InventorySlotContainer.move_child(c, 0)
 
+func update_volume():
+	var master_vol = prefs.master_vol if !prefs.muted else 0
+	if master_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), master_vol/100.0)
+	if prefs.music_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), prefs.music_vol/100.0)
+	if prefs.sfx_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("SFX")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("SFX"), prefs.sfx_vol/100.0)
+	if prefs.muted:
+		if %MuteButton.icon != SOUND_BUTTON_MUTED:
+			%MuteButton.icon = SOUND_BUTTON_MUTED
+	if !prefs.muted:
+		if %MuteButton.icon != SOUND_BUTTON_UNMUTED:
+			%MuteButton.icon = SOUND_BUTTON_UNMUTED
+
 func hide_path_arrow():
 	%Arrow.hide()
 func show_path_arrow(path: Array[Vector2i], include_end: bool):
@@ -560,9 +691,9 @@ func _on_restart_button_pressed():
 
 func get_controls_string() -> String:
 	return (
-		"Try hovering your cursor over your stats, up above me, to learn how to play!\n\n" +
-		"Click: Move\n" +
-		"Click (ITEMS): Use\n" +
+		"Hover your cursor over things to see a helpful tooltip appear here!\n\n" +
+		"Click/WASD: Move\n" +
+		"Click: Use Item\n" +
 		"Z: Undo\n" +
 		"Y: Redo\n" +
 		"R: Restart\n" +
@@ -629,3 +760,15 @@ func _on_export_button_pressed():
 	var s = JSON.stringify(d)
 	%LineEdit.text = s
 	sound.play("loadstate")
+
+func _on_tutorial_button_pressed():
+	%ColorRect.hide()
+	game_interactable = true
+	sound.play("uiinteract")
+	
+	prefs.tutorial_seen = true
+	save_user_prefs()
+
+func _on_mute_button_pressed():
+	prefs.muted = !prefs.muted
+	save_user_prefs()

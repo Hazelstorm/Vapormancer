@@ -55,6 +55,7 @@ Button/colors/icon_pressed_color = Color(0.09803922, 0.003921569, 0.101960786, 1
 Button/styles/hover = SubResource("StyleBoxTexture_nrt0f")
 Button/styles/normal = SubResource("StyleBoxTexture_nrt0f")
 Button/styles/pressed = SubResource("StyleBoxTexture_gco77")
+Label/colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
 PanelContainer/styles/panel = SubResource("StyleBoxTexture_4yjuo")
 TextEdit/colors/caret_color = Color(1, 0.92156863, 0.84705883, 1)
 TextEdit/colors/font_color = Color(1, 0.92156863, 0.84705883, 1)
