@@ -52,8 +52,11 @@ func clear(game: Game):
 	stack.clear()
 	undo_stack.clear()
 
-func get_save() -> Save:
+func get_save(game: Game) -> Save:
 	var save := Save.new()
+	save.hp = game.hp
+	save.mag = game.mag
+	save.steam = game.steam
 	for event in cur_turn.events:
 		save.cur_turn.append(serialize_event(event))
 	for turn in stack:

@@ -194,7 +194,7 @@ func try_redo():
 			sound.play("nuhuh")
 
 func save_game():
-	var save := undo.get_save()
+	var save := undo.get_save(game)
 	ResourceSaver.save(save, "user://save%d.tres" % [selected_save_slot + 1])
 	update_save_slot_preview(game)
 	sound.play("savestate")
@@ -322,9 +322,14 @@ func update_save_slot_preview(_game: Game = null):
 			return
 		preview_save = loaded
 		
-		preview_undo.load_save(preview_save, preview_game)
-		
-		_game = preview_game
+		if preview_save.hp:
+			_game = Game.new()
+			_game.hp = preview_save.hp
+			_game.mag = preview_save.mag
+			_game.steam = preview_save.steam
+		else:
+			preview_undo.load_save(preview_save, preview_game)
+			_game = preview_game
 	
 	_update_save_slot_preview(_game)
 
