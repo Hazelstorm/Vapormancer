@@ -24,6 +24,7 @@ var key_repeat_action: String
 var key_repeat_count: int
 var key_repeat_due: int
 
+#region Tilemap Setup
 func _on_tile_layer_child_entered_tree(tile: TileActor):
 	if !tile.data:
 		return
@@ -44,10 +45,11 @@ func _on_stack_layer_child_entered_tree(stack):
 		tile.stacks = stack.stacks
 	stack.hide()
 	stack.queue_free()
+#endregion
 
 func _ready():
 	undo.reset(game)
-	clear_confirmation_timer.timeout.connect(_reset_clear_confirmation)
+	clear_confirmation_timer.timeout.connect(reset_clear_confirmation)
 	game.setup_astar()
 	
 	load_user_prefs()
@@ -63,7 +65,7 @@ func _ready():
 	update_save_slot_preview()
 
 func _process(_dt):
-	handle_mouse_click()
+	handle_input()
 	handle_mouse_hover()
 	handle_cheat_inputs()
 	update_volume()
@@ -78,120 +80,35 @@ func _process(_dt):
 	
 	if playback.get_current_clip_index() != clip_index:
 		playback.switch_to_clip(clip_index)
-	
-	if Input.is_action_just_pressed("reset") and game_interactable:
-		var success = undo.reset(game)
-		update_visuals()
-		if sound:
-			if success:
-				sound.play("restart")
-			else:
-				sound.play("nuhuh")
-	
-	if Input.is_action_just_pressed("undo"):
-		key_repeat_held = true
-		key_repeat_action = "undo"
-		key_repeat_count = 0
-		key_repeat_due = Time.get_ticks_msec()
-	if Input.is_action_just_released("undo"):
-		if key_repeat_action == "undo":
-			key_repeat_held = false
-	if Input.is_action_just_pressed("redo"):
-		key_repeat_held = true
-		key_repeat_action = "redo"
-		key_repeat_count = 0
-		key_repeat_due = Time.get_ticks_msec()
-	if Input.is_action_just_released("redo"):
-		if key_repeat_action == "redo":
-			key_repeat_held = false
-	if key_repeat_held and Time.get_ticks_msec() >= key_repeat_due:
-		match key_repeat_action:
-			"undo":
-				try_undo()
-			"redo":
-				try_redo()
-		key_repeat_count += 1
-		key_repeat_due = Time.get_ticks_msec() + key_repeat_interval()
-	
-	if Input.is_action_just_pressed("master_up"):
-		if prefs.master_vol >= 200:
-			sound.play("nuhuh")
-		else:
-			prefs.master_vol = prefs.master_vol + 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	if Input.is_action_just_pressed("master_down"):
-		if prefs.master_vol <= 0:
-			sound.play("nuhuh")
-		else:
-			prefs.master_vol = prefs.master_vol - 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	if Input.is_action_just_pressed("music_up"):
-		if prefs.music_vol >= 200:
-			sound.play("nuhuh")
-		else:
-			prefs.music_vol = prefs.music_vol + 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	if Input.is_action_just_pressed("music_down"):
-		if prefs.music_vol <= 0:
-			sound.play("nuhuh")
-		else:
-			prefs.music_vol = prefs.music_vol - 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	if Input.is_action_just_pressed("sfx_up"):
-		if prefs.sfx_vol >= 200:
-			sound.play("nuhuh")
-		else:
-			prefs.sfx_vol = prefs.sfx_vol + 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	if Input.is_action_just_pressed("sfx_down"):
-		if prefs.sfx_vol <= 0:
-			sound.play("nuhuh")
-		else:
-			prefs.sfx_vol = prefs.sfx_vol - 10
-			sound.play("uiinteract")
-			save_user_prefs()
-	
-	%HPLabel.text = "HP: %d" % game.hp
-	if game.mag > 0:
-		%MAGLabel.text = "%d [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color]" % abs(game.mag)
-	elif game.mag == 0:
-		%MAGLabel.text = "%d" % abs(game.mag)
-	else:
-		%MAGLabel.text = "%d [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color]" % abs(game.mag)
-	%SteamLabel.text = "+ %d [shake rate=10.0 level=3 connected=0]Steam[/shake]" % game.steam
-	%DEFLabel.text = "DEF: %d" % game.defense
 
-var key_repeat_interval_max = 500.0
-var key_repeat_interval_min = 50.0
-func key_repeat_interval():
-	return (key_repeat_interval_max - key_repeat_interval_min) / pow(key_repeat_count, 0.7) + key_repeat_interval_min
+#region save/load
+func _on_undo_button_pressed():
+	if game_interactable:
+		try_undo()
 
-func try_undo():
-	if !game_interactable:
-		return
-	var success = undo.undo(game)
-	update_visuals()
-	if sound:
-		if success:
-			sound.play("undo")
-		else:
-			sound.play("nuhuh")
+func _on_redo_button_pressed():
+	if game_interactable:
+		try_redo()
 
-func try_redo():
-	if !game_interactable:
-		return
-	var success = undo.redo(game)
-	update_visuals()
-	if sound:
-		if success:
-			sound.play("redo")
-		else:
-			sound.play("nuhuh")
+func _on_restart_button_pressed():
+	if game_interactable:
+		try_reset()
+
+func _on_prev_save_button_pressed():
+	selected_save_slot = posmod(selected_save_slot - 1, 16)
+	update_save_slot_preview()
+	sound.play("uiinteract")
+	
+	clear_confirmation_timer.stop()
+	clear_confirmation_timer.timeout.emit()
+
+func _on_next_save_button_pressed():
+	selected_save_slot = (selected_save_slot + 1) % 16
+	update_save_slot_preview()
+	sound.play("uiinteract")
+	
+	clear_confirmation_timer.stop()
+	clear_confirmation_timer.timeout.emit()
 
 func save_game():
 	var save := undo.get_save(game)
@@ -230,13 +147,13 @@ func clear_save():
 		return
 	
 	DirAccess.remove_absolute("user://save%d.tres" % [selected_save_slot + 1])
-	_update_save_slot_preview(null)
+	set_save_slot_preview(null)
 	sound.play("erased")
 	
 	clear_confirmation_timer.stop()
 	clear_confirmation_timer.timeout.emit()
 
-func _reset_clear_confirmation():
+func reset_clear_confirmation():
 	clear_confirmation = 0
 	%ClearButton.text = "Clear"
 
@@ -290,22 +207,6 @@ func load_user_prefs():
 	if FileAccess.file_exists("user://prefs.tres"):
 		prefs = ResourceLoader.load("user://prefs.tres")
 
-func _on_prev_save_button_pressed():
-	selected_save_slot = posmod(selected_save_slot - 1, 16)
-	update_save_slot_preview()
-	sound.play("uiinteract")
-	
-	clear_confirmation_timer.stop()
-	clear_confirmation_timer.timeout.emit()
-
-func _on_next_save_button_pressed():
-	selected_save_slot = (selected_save_slot + 1) % 16
-	update_save_slot_preview()
-	sound.play("uiinteract")
-	
-	clear_confirmation_timer.stop()
-	clear_confirmation_timer.timeout.emit()
-
 var preview_save: Save
 var preview_game: Game
 var preview_undo := Undo.new()
@@ -314,11 +215,11 @@ func update_save_slot_preview(_game: Game = null):
 	
 	if !_game:
 		if !FileAccess.file_exists("user://save%d.tres" % [selected_save_slot + 1]):
-			_update_save_slot_preview(null)
+			set_save_slot_preview(null)
 			return
 		var loaded = ResourceLoader.load("user://save%d.tres" % [selected_save_slot + 1], "", ResourceLoader.CACHE_MODE_IGNORE)
 		if !loaded or loaded is not Save:
-			_update_save_slot_preview(null)
+			set_save_slot_preview(null)
 			return
 		preview_save = loaded
 		
@@ -331,9 +232,9 @@ func update_save_slot_preview(_game: Game = null):
 			preview_undo.load_save(preview_save, preview_game)
 			_game = preview_game
 	
-	_update_save_slot_preview(_game)
+	set_save_slot_preview(_game)
 
-func _update_save_slot_preview(_game: Game, error := ""):
+func set_save_slot_preview(_game: Game, error := ""):
 	%SaveNameLabel.text = "Save Slot %d" % [selected_save_slot + 1]
 	
 	if error:
@@ -355,37 +256,118 @@ func _update_save_slot_preview(_game: Game, error := ""):
 		else "",
 		_game.steam
 	]
+#endregion
 
-func handle_mouse_click():
+#region input handling
+var key_repeat_interval_max = 500.0
+var key_repeat_interval_min = 50.0
+var key_repeat_interval: int:
+	get():
+		return (key_repeat_interval_max - key_repeat_interval_min) / pow(key_repeat_count, 0.7) + key_repeat_interval_min
+
+func handle_input():
+	if game_interactable:
+		# movement
+		var mouse_coord: Vector2i = %TileLayer.local_to_map(%TileLayer.to_local(get_global_mouse_position()))
+		if Input.is_action_just_pressed("mouse_click"):
+			game.do_move(mouse_coord, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("ui_up"):
+			game.do_move(game.player.coords + Vector2i.UP, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("ui_right"):
+			game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("ui_down"):
+			game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("ui_left"):
+			game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("up"):
+			game.do_move(game.player.coords + Vector2i.UP, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("right"):
+			game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("down"):
+			game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
+			update_visuals()
+		if Input.is_action_just_pressed("left"):
+			game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
+			update_visuals()
 	
-	var mouse_coord: Vector2i = %TileLayer.local_to_map(%TileLayer.to_local(get_global_mouse_position()))
-	if Input.is_action_just_pressed("mouse_click") and game_interactable:
-		game.do_move(mouse_coord, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("ui_up"):
-		game.do_move(game.player.coords + Vector2i.UP, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("ui_right"):
-		game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("ui_down"):
-		game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("ui_left"):
-		game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("up"):
-		game.do_move(game.player.coords + Vector2i.UP, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("right"):
-		game.do_move(game.player.coords + Vector2i.RIGHT, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("down"):
-		game.do_move(game.player.coords + Vector2i.DOWN, undo, sound)
-		update_visuals()
-	if Input.is_action_just_pressed("left"):
-		game.do_move(game.player.coords + Vector2i.LEFT, undo, sound)
-		update_visuals()
+		# undo stack control
+		if Input.is_action_just_pressed("reset"):
+			try_reset()
+		if Input.is_action_just_pressed("undo"):
+			key_repeat_held = true
+			key_repeat_action = "undo"
+			key_repeat_count = 0
+			key_repeat_due = Time.get_ticks_msec()
+		if Input.is_action_just_released("undo"):
+			if key_repeat_action == "undo":
+				key_repeat_held = false
+		if Input.is_action_just_pressed("redo"):
+			key_repeat_held = true
+			key_repeat_action = "redo"
+			key_repeat_count = 0
+			key_repeat_due = Time.get_ticks_msec()
+		if Input.is_action_just_released("redo"):
+			if key_repeat_action == "redo":
+				key_repeat_held = false
+		if key_repeat_held and Time.get_ticks_msec() >= key_repeat_due:
+			match key_repeat_action:
+				"undo":
+					try_undo()
+				"redo":
+					try_redo()
+			key_repeat_count += 1
+			key_repeat_due = Time.get_ticks_msec() + key_repeat_interval
+	
+	# volume
+	if Input.is_action_just_pressed("master_up"):
+		if prefs.master_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.master_vol = prefs.master_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("master_down"):
+		if prefs.master_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.master_vol = prefs.master_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("music_up"):
+		if prefs.music_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.music_vol = prefs.music_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("music_down"):
+		if prefs.music_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.music_vol = prefs.music_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("sfx_up"):
+		if prefs.sfx_vol >= 200:
+			sound.play("nuhuh")
+		else:
+			prefs.sfx_vol = prefs.sfx_vol + 10
+			sound.play("uiinteract")
+			save_user_prefs()
+	if Input.is_action_just_pressed("sfx_down"):
+		if prefs.sfx_vol <= 0:
+			sound.play("nuhuh")
+		else:
+			prefs.sfx_vol = prefs.sfx_vol - 10
+			sound.play("uiinteract")
+			save_user_prefs()
 
 func _on_inventory_slot_pressed(slot: InventorySlot):
 	if !game_interactable:
@@ -397,6 +379,52 @@ func _on_inventory_slot_pressed(slot: InventorySlot):
 	inventory_hover = null
 	update_visuals()
 
+func try_undo():
+	var success = undo.undo(game)
+	update_visuals()
+	if sound:
+		if success:
+			sound.play("undo")
+		else:
+			sound.play("nuhuh")
+
+func try_redo():
+	var success = undo.redo(game)
+	update_visuals()
+	if sound:
+		if success:
+			sound.play("redo")
+		else:
+			sound.play("nuhuh")
+
+func try_reset():
+	var success = undo.reset(game)
+	update_visuals()
+	if sound:
+		if success:
+			sound.play("restart")
+		else:
+			sound.play("nuhuh")
+
+func handle_cheat_inputs():
+	if !cheats_enabled:
+		return
+	var delta = 0
+	if Input.is_action_just_pressed("cheat_add"):
+		delta += 1
+	if Input.is_action_just_pressed("cheat_subtract"):
+		delta -= 1
+	if Input.is_action_pressed("cheat_mag"):
+		game.mag += delta
+	if Input.is_action_pressed("cheat_steam"):
+		game.steam += delta
+	if Input.is_action_pressed("cheat_hp"):
+		game.hp += delta * 10
+	if Input.is_action_pressed("cheat_defense"):
+		game.defense += delta
+#endregion
+
+#region preview path + preview description
 var ui_hover := 0
 func _on_undo_button_mouse_entered():
 	ui_hover = 1
@@ -594,72 +622,6 @@ func handle_mouse_hover():
 	if %PreviewDesc.text != preview_desc:
 		%PreviewDesc.text = preview_desc
 
-func handle_cheat_inputs():
-	if !cheats_enabled:
-		return
-	var delta = 0
-	if Input.is_action_just_pressed("cheat_add"):
-		delta += 1
-	if Input.is_action_just_pressed("cheat_subtract"):
-		delta -= 1
-	if Input.is_action_pressed("cheat_mag"):
-		game.mag += delta
-	if Input.is_action_pressed("cheat_steam"):
-		game.steam += delta
-	if Input.is_action_pressed("cheat_hp"):
-		game.hp += delta * 10
-	if Input.is_action_pressed("cheat_defense"):
-		game.defense += delta
-
-# force all tile visuals to match internal state
-func update_visuals():
-	for id in game.tiles:
-		var tile := game.tiles[id]
-		tile.actor.global_position = %TileLayer.to_global(%TileLayer.map_to_local(tile.coords))
-	
-	var tracked_items: Array[InvItem] = []
-	for slot: InventorySlot in %InventorySlotContainer.get_children():
-		if slot.inv_item not in game.inventory:
-			slot.queue_free()
-		else:
-			tracked_items.append(slot.inv_item)
-			slot.tile.data.stacks = slot.inv_item.stacks
-	for inv_item in game.inventory:
-		if inv_item not in tracked_items:
-			var slot: InventorySlot = INVENTORY_SLOT.instantiate()
-			slot.mouse_entered.connect(_on_inventory_slot_mouse_entered.bind(slot))
-			slot.mouse_exited.connect(_on_inventory_slot_mouse_exited)
-			slot.pressed.connect(_on_inventory_slot_pressed.bind(slot))
-			%InventorySlotContainer.add_child(slot)
-			slot.inv_item = inv_item
-			slot.tile.data = inv_item.item.duplicate()
-			slot.tile.data.stacks = inv_item.stacks
-			slot.tile.get_node("Sprite2D").texture = inv_item.item.actor.get_node("Sprite2D").texture
-	
-	# sort by order
-	var sorted_nodes = %InventorySlotContainer.get_children()
-	sorted_nodes.sort_custom(
-		func(a: InventorySlot, b: InventorySlot):
-			return game.inventory.find(a.inv_item) > game.inventory.find(b.inv_item)
-	)
-	for c in sorted_nodes:
-		%InventorySlotContainer.move_child(c, 0)
-
-func update_volume():
-	var master_vol = prefs.master_vol if !prefs.muted else 0
-	if master_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")):
-		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), master_vol/100.0)
-	if prefs.music_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")):
-		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), prefs.music_vol/100.0)
-	if prefs.sfx_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("SFX")):
-		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("SFX"), prefs.sfx_vol/100.0)
-	if prefs.muted:
-		if %MuteButton.icon != SOUND_BUTTON_MUTED:
-			%MuteButton.icon = SOUND_BUTTON_MUTED
-	if !prefs.muted:
-		if %MuteButton.icon != SOUND_BUTTON_UNMUTED:
-			%MuteButton.icon = SOUND_BUTTON_UNMUTED
-
 func hide_path_arrow():
 	%Arrow.hide()
 func show_path_arrow(path: Array[Vector2i], include_end: bool):
@@ -681,18 +643,6 @@ func show_cursor(coord: Vector2i):
 func show_cursor_at(global_pos: Vector2):
 	%TileCursor.show()
 	%TileCursor.global_position = global_pos
-
-func _on_undo_button_pressed():
-	undo.undo(game)
-	update_visuals()
-
-func _on_redo_button_pressed():
-	undo.redo(game)
-	update_visuals()
-
-func _on_restart_button_pressed():
-	undo.reset(game)
-	update_visuals()
 
 func get_controls_string() -> String:
 	return (
@@ -747,24 +697,67 @@ func get_item_description(item: Item) -> String:
 		else:
 			description_items.insert(0, "On Pickup:")
 	return "\n".join(description_items)
+#endregion
 
-
-func _on_export_button_pressed():
-	if !FileAccess.file_exists("user://save%d.tres" % [selected_save_slot + 1]):
-		sound.play("nuhuh")
-		return
-	var save: Save = ResourceLoader.load("user://save%d.tres" % [selected_save_slot + 1], "", ResourceLoader.CACHE_MODE_IGNORE)
-	if !save:
-		sound.play("nuhuh")
-		return
+# update all visuals to match internal state
+func update_visuals():
+	for id in game.tiles:
+		var tile := game.tiles[id]
+		tile.actor.global_position = %TileLayer.to_global(%TileLayer.map_to_local(tile.coords))
 	
-	var d: Dictionary
-	d.cur_turn = save.cur_turn
-	d.undo_stack = save.stack
-	d.redo_stack = save.undo_stack
-	var s = JSON.stringify(d)
-	%LineEdit.text = s
-	sound.play("loadstate")
+	var tracked_items: Array[InvItem] = []
+	for slot: InventorySlot in %InventorySlotContainer.get_children():
+		if slot.inv_item not in game.inventory:
+			slot.queue_free()
+		else:
+			tracked_items.append(slot.inv_item)
+			slot.tile.data.stacks = slot.inv_item.stacks
+	for inv_item in game.inventory:
+		if inv_item not in tracked_items:
+			var slot: InventorySlot = INVENTORY_SLOT.instantiate()
+			slot.mouse_entered.connect(_on_inventory_slot_mouse_entered.bind(slot))
+			slot.mouse_exited.connect(_on_inventory_slot_mouse_exited)
+			slot.pressed.connect(_on_inventory_slot_pressed.bind(slot))
+			%InventorySlotContainer.add_child(slot)
+			slot.inv_item = inv_item
+			slot.tile.data = inv_item.item.duplicate()
+			slot.tile.data.stacks = inv_item.stacks
+			slot.tile.get_node("Sprite2D").texture = inv_item.item.actor.get_node("Sprite2D").texture
+	
+	# sort by order
+	var sorted_nodes = %InventorySlotContainer.get_children()
+	sorted_nodes.sort_custom(
+		func(a: InventorySlot, b: InventorySlot):
+			return game.inventory.find(a.inv_item) > game.inventory.find(b.inv_item)
+	)
+	for c in sorted_nodes:
+		%InventorySlotContainer.move_child(c, 0)
+	
+	%HPLabel.text = "HP: %d" % game.hp
+	if game.mag > 0:
+		%MAGLabel.text = "%d [outline_color=#4f67ff][outline_size=4]Water[/outline_size][/outline_color]" % abs(game.mag)
+	elif game.mag == 0:
+		%MAGLabel.text = "%d" % abs(game.mag)
+	else:
+		%MAGLabel.text = "%d [color=#19011a][outline_color=#ff7f00][outline_size=4]Fire[/outline_size][/outline_color][/color]" % abs(game.mag)
+	%SteamLabel.text = "+ %d [shake rate=10.0 level=3 connected=0]Steam[/shake]" % game.steam
+	%DEFLabel.text = "DEF: %d" % game.defense
+
+# update audio buses to match volume settings
+func update_volume():
+	var master_vol = prefs.master_vol if !prefs.muted else 0
+	if master_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Master")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Master"), master_vol/100.0)
+	if prefs.music_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("Music")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("Music"), prefs.music_vol/100.0)
+	if prefs.sfx_vol/100.0 != AudioServer.get_bus_volume_linear(AudioServer.get_bus_index("SFX")):
+		AudioServer.set_bus_volume_linear(AudioServer.get_bus_index("SFX"), prefs.sfx_vol/100.0)
+	if prefs.muted:
+		if %MuteButton.icon != SOUND_BUTTON_MUTED:
+			%MuteButton.icon = SOUND_BUTTON_MUTED
+	if !prefs.muted:
+		if %MuteButton.icon != SOUND_BUTTON_UNMUTED:
+			%MuteButton.icon = SOUND_BUTTON_UNMUTED
 
 func _on_tutorial_button_pressed():
 	%ColorRect.hide()
