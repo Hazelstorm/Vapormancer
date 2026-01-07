@@ -49,6 +49,7 @@ func _on_stack_layer_child_entered_tree(stack):
 
 func _ready():
 	undo.reset(game)
+	update_visuals()
 	clear_confirmation_timer.timeout.connect(reset_clear_confirmation)
 	game.setup_astar()
 	

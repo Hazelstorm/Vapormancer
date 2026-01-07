@@ -58,11 +58,11 @@ func get_save(game: Game) -> Save:
 	save.mag = game.mag
 	save.steam = game.steam
 	for event in cur_turn.events:
-		save.cur_turn.append(serialize_event(event))
+		save.cur_turn.append_array(serialize_event(event))
 	for turn in stack:
-		save.stack.append(serialize_event(turn.events[-1]))
+		save.stack.append_array(serialize_event(turn.events[-1]))
 	for turn in undo_stack:
-		save.undo_stack.append(serialize_event(turn.events[-1]))
+		save.undo_stack.append_array(serialize_event(turn.events[-1]))
 		save.undo_stack.reverse()
 	return save
 
@@ -81,12 +81,12 @@ func load_save(save: Save, game: Game):
 		if !deserialize_event(action, game):
 			return
 
-func serialize_event(e: Event) -> String:
+func serialize_event(e: Event) -> Array[String]:
 	if e is RestartEvent:
-		return "r"
+		return ["r"]
 	if e is UseItemEvent:
-		return "i" + str(e.idx)
-	return "c" + str(e.coords.x) + "," + str(e.coords.y)
+		return ["c" + str(e.coords.x) + "," + str(e.coords.y), "i" + str(e.idx)]
+	return ["c" + str(e.coords.x) + "," + str(e.coords.y)]
 func deserialize_event(s: String, game: Game) -> bool:
 	if s == "r":
 		reset(game)

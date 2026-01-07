@@ -330,6 +330,7 @@ func use_item(idx: int, undo: Undo, sound: SoundServer = null) -> bool:
 		return false
 	var lose_item_event = LoseItemEvent.new().setup(inventory[idx], self)
 	var use_event = UseItemEvent.new().setup(inventory[idx].item, self)
+	use_event.coords = player.coords
 	undo.commit_event(lose_item_event, self)
 	undo.commit_event(use_event, self)
 	undo.commit_turn()
